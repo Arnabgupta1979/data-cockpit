@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SSG CDS Operating Dashboard</title>
+  <meta name="description" content="A lightweight browser dashboard for the SSG Coordinating Data Steward role." />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="app-header">
+    <div class="brand-block" aria-hidden="true"><span></span><span></span><span></span></div>
+    <div>
+      <p class="eyebrow">Social Sciences Group · Coordinating Data Steward</p>
+      <h1>SSG CDS Operating Dashboard</h1>
+      <p class="subtitle">Coordinate · inform · route · improve — without absorbing every case.</p>
+    </div>
+    <div class="header-actions">
+      <button id="exportBtn" class="btn btn-secondary" title="Export your dashboard data as a JSON backup">Export data</button>
+      <label class="btn btn-secondary file-label" title="Import a previously exported JSON file">
+        Import data
+        <input id="importInput" type="file" accept="application/json" />
+      </label>
+      <button id="resetBtn" class="btn btn-ghost" title="Reset to the starter data included in this dashboard">Reset starter data</button>
+    </div>
+  </header>
+
+  <aside class="privacy-banner">
+    <strong>Privacy guard:</strong> this starter dashboard is designed for code-only GitHub hosting. Do not commit confidential DS lists, personal case notes, personal data, or sensitive WUR-only material to GitHub. Keep those in approved WUR storage and use local import/export when needed.
+  </aside>
+
+  <main class="layout">
+    <nav class="sidebar" aria-label="Dashboard sections">
+      <button class="nav-btn active" data-view="overview">Overview</button>
+      <button class="nav-btn" data-view="tasks">Tasks</button>
+      <button class="nav-btn" data-view="issues">Issue tracker</button>
+      <button class="nav-btn" data-view="routing">Routing matrix</button>
+      <button class="nav-btn" data-view="stakeholders">Stakeholders</button>
+      <button class="nav-btn" data-view="campaign">Campaign calendar</button>
+      <button class="nav-btn" data-view="coverage">DS coverage</button>
+      <button class="nav-btn" data-view="brief">Laura brief</button>
+      <button class="nav-btn" data-view="templates">Templates</button>
+      <button class="nav-btn" data-view="settings">Settings</button>
+    </nav>
+
+    <section id="app" class="content" aria-live="polite"></section>
+  </main>
+
+  <footer class="app-footer">
+    <span>Starter v0.1 · Static HTML/CSS/JS · Data stored in this browser unless exported</span>
+  </footer>
+
+  <script src="data/defaultData.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
