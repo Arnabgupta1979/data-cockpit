@@ -1,5 +1,7 @@
 # SSG CDS Operating Dashboard
 
+Version: v0.2 June 2026 baseline
+
 A lightweight static browser dashboard for the Coordinating Data Steward (CDS) role in WUR Social Sciences Group (SSG).
 
 It is designed to help with:
@@ -9,7 +11,8 @@ It is designed to help with:
 - stakeholder cadence;
 - first-year communication planning;
 - DS coverage monitoring at group level;
-- monthly brief generation for Laura / management updates.
+- monthly brief generation for Laura / management updates;
+- a decision log and operational timeline based on the June 2026 status handover.
 
 ## Important privacy note
 
@@ -29,7 +32,7 @@ Use GitHub only for the dashboard code and generic configuration. Keep sensitive
 index.html              Main page
 styles.css              Dashboard styling
 app.js                  Dashboard logic and local storage
-data/defaultData.js     Starter data, deliberately non-confidential
+data/defaultData.js     Baseline data, deliberately non-confidential
 README.md               Setup notes
 .gitignore              Basic ignore file
 LICENSE                 Optional MIT license text
@@ -46,6 +49,9 @@ LICENSE                 Optional MIT license text
 7. Wait a minute or two. GitHub will show the published URL.
 
 ## Updating the dashboard
+
+This v0.2 package uses a new browser local-storage key (`ssg-cds-dashboard-v02`) so the June 2026 baseline appears cleanly. If you have made edits in the previous live dashboard, export them first and import them after replacing the files.
+
 
 The dashboard runs fully in the browser. You can:
 
@@ -67,3 +73,8 @@ Then ask ChatGPT to update `data/defaultData.js` or help edit the exported JSON 
 ## Licence
 
 Use internally as needed. If publishing publicly, review branding and institutional-policy implications first.
+
+
+## v0.2 update notes
+
+This update incorporates the June 2026 CDS status handover at a non-confidential level: aggregate DS coverage, settled decisions, live inherited open items, first-year timeline, stakeholder cadence, and updated tasks. It avoids storing the named confidential DS list or sensitive case notes in the GitHub Pages files.

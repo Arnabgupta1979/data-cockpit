@@ -1,4 +1,4 @@
-const STORAGE_KEY = "ssg-cds-dashboard-v01";
+const STORAGE_KEY = "ssg-cds-dashboard-v02";
 let state = loadState();
 let currentView = "overview";
 
@@ -14,12 +14,22 @@ document.addEventListener("DOMContentLoaded", () => {
 function loadState() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) return JSON.parse(raw);
+    if (raw) return normaliseState(JSON.parse(raw));
   } catch (error) {
     console.warn("Could not load local dashboard data", error);
   }
-  return structuredClone(window.DEFAULT_CDS_DATA);
+  return normaliseState(structuredClone(window.DEFAULT_CDS_DATA));
 }
+
+function normaliseState(data) {
+  const base = structuredClone(window.DEFAULT_CDS_DATA);
+  const merged = { ...base, ...data, meta: { ...base.meta, ...(data.meta || {}) } };
+  ["coverage", "stakeholders", "routing", "tasks", "issues", "campaign", "templates", "decisions", "timeline"].forEach(key => {
+    if (!Array.isArray(merged[key])) merged[key] = base[key] || [];
+  });
+  return merged;
+}
+
 
 function saveState() {
   state.meta.lastUpdated = new Date().toISOString().slice(0, 10);
@@ -55,6 +65,8 @@ function render() {
     issues: renderIssues,
     routing: renderRouting,
     stakeholders: renderStakeholders,
+    decisions: renderDecisions,
+    timeline: renderTimeline,
     campaign: renderCampaign,
     coverage: renderCoverage,
     brief: renderBrief,
@@ -308,6 +320,49 @@ function renderStakeholders() {
     </section>`;
 }
 
+function renderDecisions() {
+  const decisions = state.decisions || [];
+  return `
+    <section class="card">
+      <p class="eyebrow">Settled decisions and active constraints</p>
+      <h2>Decision log</h2>
+      <p class="muted">Use this to keep the June 2026 baseline stable. Decisions here should be factual and short; sensitive details stay outside GitHub.</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Date</th><th>Decision</th><th>Detail</th><th>Status</th></tr></thead>
+          <tbody>${decisions.map(d => `
+            <tr>
+              <td>${escapeHTML(d.date || "")}</td>
+              <td><strong>${escapeHTML(d.decision || "")}</strong></td>
+              <td class="small muted">${escapeHTML(d.detail || "")}</td>
+              <td>${statusBadge(d.status || "Settled")}</td>
+            </tr>`).join("") || `<tr><td colspan="4" class="muted">No decisions recorded.</td></tr>`}</tbody>
+        </table>
+      </div>
+    </section>`;
+}
+
+function renderTimeline() {
+  const timeline = state.timeline || [];
+  return `
+    <section class="card">
+      <p class="eyebrow">From handover to first-year execution</p>
+      <h2>Operational timeline</h2>
+      <p class="muted">This is the dashboard version of the status handover timeline: what is settled, what is immediate, and what is coming next.</p>
+      <div class="timeline">
+        ${timeline.map(item => `
+          <div class="timeline-item">
+            <div class="timeline-month">${escapeHTML(item.when || "")}</div>
+            <div>
+              <strong>${escapeHTML(item.phase || "Timeline")}</strong><br>
+              <span class="muted small">${escapeHTML(item.event || "")}</span>
+            </div>
+            ${statusBadge(item.status || "Planned")}
+          </div>`).join("") || `<p class="muted">No timeline items recorded.</p>`}
+      </div>
+    </section>`;
+}
+
 function renderCampaign() {
   return `
     <section class="card">
@@ -449,7 +504,7 @@ function importData(event) {
     try {
       const imported = JSON.parse(reader.result);
       validateImport(imported);
-      state = imported;
+      state = normaliseState(imported);
       saveState();
       render();
       toast("Data imported");
@@ -482,7 +537,11 @@ function issueList(issues) {
 }
 
 function statusBadge(status = "Open") {
-  const cls = status === "Done" || status === "Closed" ? "done" : status.includes("progress") || status.includes("Awaiting") ? "progress" : "open";
+  const normalized = String(status).toLowerCase();
+  let cls = "open";
+  if (["done", "closed", "settled"].includes(normalized)) cls = "done";
+  else if (normalized.includes("risk") || normalized.includes("constraint")) cls = "high";
+  else if (normalized.includes("progress") || normalized.includes("await") || normalized.includes("follow-up") || normalized.includes("pending") || normalized.includes("planned")) cls = "progress";
   return `<span class="badge ${cls}">${escapeHTML(status)}</span>`;
 }
 
